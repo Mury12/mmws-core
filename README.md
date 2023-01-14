@@ -1,23 +1,17 @@
-# MM-WS - PHP Webservice Template @v0.12.1-beta2
+# MM-WS - PHP Webservice Template @v0.12.3-beta1
 
 **V0.12.x is is migrating to PHP 8.x, and older versions will be marked as stale.**
 
-> V0.12.1-beta0 does not support backwards compat with v0.11.x or lower.
+#### Disclaimer
+
+This repository is composed by the core files for the [MMWS](https://github.com/mury12/mmws), and both
+should be used together.
 
 ## Before using
 
 Ensure that you have read this documentation until the end
 before using this webservice. It contains very important
 informations about the way it works.
-
-Generate a SSH key at `./.ssh/ssh-name` in order to use JWT and set its name in `.env` file.
-
-## Running
-
-`composer install` - to install dependencies
-
-Webservice can be initialized with PHP CLI or any bundler you want.
-`php -S localhost:8081`
 
 ## Initiators
 
@@ -500,4 +494,3 @@ unique id generator, token generator, error handlers, etc., but the most used ar
 - `report(mixed $error)`: saves the error into a log in logs/error.log.
 
 ---
-
