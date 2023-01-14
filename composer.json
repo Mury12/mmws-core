@@ -1,0 +1,24 @@
+{
+  "version": "0.12.1-beta1",
+  "require": {
+    "vlucas/phpdotenv": "^5.1",
+    "firebase/php-jwt": "^5.2"
+  },
+  "scripts": {
+    "create-module": "php ./src/util/create-module.php",
+    "create-mvc": "php ./src/util/mvc-creator.php",
+    "restore-endpoint": "cp ./src/util/templates/classes/EndpointModel.template ./core/handlers/Endpoint.php",
+    "start": [
+      "Composer\\Config::disableProcessTimeout",
+      "php -S 0.0.0.0:8081"
+    ]
+  },
+  "autoload": {
+    "psr-4": {
+      "MMWS\\": [
+        "core",
+        "src/classes"
+      ]
+    }
+  }
+}
