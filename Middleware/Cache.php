@@ -54,12 +54,16 @@ class Cache implements Middleware
         $cachedName = $name . $pathname . '_cache';
         if (SESSION::get($cachedName)) {
             $cached = json_decode(SESSION::get($cachedName), true);
-
+            $cacheTime = new \DateTime($cached['time']['date']);
             $now = new \DateTime();
 
-            $diff = date_diff($now, new \DateTime($cached['time']['date']))->format('%s');
+            $diff = date_diff($now, $cacheTime)->format('%s');
+            $ttl = self::$timeout - +$diff;
+
             if ($diff < self::$timeout) {
-                return $cached['result'];
+                header("X-Result-Cached-At: " . $cacheTime->format('D, d M Y H:i:s') . " GMT");
+                header("X-Result-Will-Renew: " .  gmdate('D, d M Y H:i:s', strtotime("+ $ttl seconds")) . " GMT");
+                return array_merge($cached['result']);
             }
         }
         return false;
@@ -87,10 +91,11 @@ class Cache implements Middleware
         /**
          * @var MMWS\Abstract\Model[] $toParse
          */
-        $toParse = is_array($result) ? $result : [$result];
-        return array_map(function ($item) {
-            return $item->toArray();
-        }, $toParse);
+        return !is_array($result)
+            ? $result->toArray()
+            : array_map(function ($item) {
+                return $item->toArray();
+            }, $result);
     }
 
     private function updateTimeout()
