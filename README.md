@@ -4,7 +4,7 @@
 
 #### Disclaimer
 
-This repository is composed by the core files for the [MMWS](https://github.com/mury12/mmws), and both
+This repository is composed by the core files for the [MMWS](https://github.com/mury12/mm-ws), and both
 should be used together.
 
 ## Before using
