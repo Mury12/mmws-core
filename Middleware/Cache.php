@@ -2,6 +2,8 @@
 
 namespace MMWS\Middleware;
 
+use MMWS\Abstracts\Model;
+use MMWS\Factory\RequestExceptionFactory;
 use MMWS\Handler\Request;
 use MMWS\Handler\SESSION;
 use MMWS\Interfaces\Middleware;
@@ -19,7 +21,7 @@ class Cache implements Middleware
     /**
      * @var Int $timeout timeout to clean cache
      */
-    public static $timeout = 10;
+    public static $timeout = 30;
 
     /**
      * @var Int $interval interval between requests
@@ -73,9 +75,22 @@ class Cache implements Middleware
         $now = new \DateTime();
         $request = array(
             'time' => $now,
-            'result' => $result
+            'result' => self::getArrayOf($result),
         );
         SESSION::add($cachedName, json_encode($request));
+    }
+
+    static function getArrayOf($result)
+    {
+        if (!($result instanceof Model || $result[0] instanceof Model))
+            throw RequestExceptionFactory::create("Cannot cache request", 500);
+        /**
+         * @var MMWS\Abstract\Model[] $toParse
+         */
+        $toParse = is_array($result) ? $result : [$result];
+        return array_map(function ($item) {
+            return $item->toArray();
+        }, $toParse);
     }
 
     private function updateTimeout()

@@ -93,15 +93,6 @@ class Endpoint
     }
 
     /**
-     * Return files inserted in @method appendPartials()
-     * @return file de arquivos
-     */
-    public function getPartials()
-    {
-        return require_once $this->partials;
-    }
-
-    /**
      * Just stets an error file (not working just now)
      * @param String $page the filename
      * 

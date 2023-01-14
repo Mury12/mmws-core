@@ -43,6 +43,7 @@ class RequestExceptionFactory
      */
     static function tmr429(int $ttl = null, string $message = null): RequestException
     {
+        header("Retry-After: " . gmdate('D, d M Y H:i:s', strtotime("+ $ttl seconds")) . ' GMT');
         $error = [
             'error' => $message ?? 'Muitas requisições em um período curto de tempo. Por favor, tente mais tarde.',
             'ttl' => $ttl ?? null
