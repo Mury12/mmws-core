@@ -2,6 +2,8 @@
 
 namespace MMWS\Middleware;
 
+use MMWS\Abstracts\Model;
+use MMWS\Factory\RequestExceptionFactory;
 use MMWS\Handler\Request;
 use MMWS\Handler\SESSION;
 use MMWS\Interfaces\Middleware;
@@ -19,7 +21,7 @@ class Cache implements Middleware
     /**
      * @var Int $timeout timeout to clean cache
      */
-    public static $timeout = 10;
+    public static $timeout = 30;
 
     /**
      * @var Int $interval interval between requests
@@ -52,12 +54,16 @@ class Cache implements Middleware
         $cachedName = $name . $pathname . '_cache';
         if (SESSION::get($cachedName)) {
             $cached = json_decode(SESSION::get($cachedName), true);
-
+            $cacheTime = new \DateTime($cached['time']['date']);
             $now = new \DateTime();
 
-            $diff = date_diff($now, new \DateTime($cached['time']['date']))->format('%s');
+            $diff = date_diff($now, $cacheTime)->format('%s');
+            $ttl = self::$timeout - +$diff;
+
             if ($diff < self::$timeout) {
-                return $cached['result'];
+                header("X-Result-Cached-At: " . $cacheTime->format('D, d M Y H:i:s') . " GMT");
+                header("X-Result-Will-Renew: " .  gmdate('D, d M Y H:i:s', strtotime("+ $ttl seconds")) . " GMT");
+                return array_merge($cached['result']);
             }
         }
         return false;
@@ -73,9 +79,23 @@ class Cache implements Middleware
         $now = new \DateTime();
         $request = array(
             'time' => $now,
-            'result' => $result
+            'result' => self::getArrayOf($result),
         );
         SESSION::add($cachedName, json_encode($request));
+    }
+
+    static function getArrayOf($result)
+    {
+        if (!($result instanceof Model || $result[0] instanceof Model))
+            throw RequestExceptionFactory::create("Cannot cache request", 500);
+        /**
+         * @var MMWS\Abstract\Model[] $toParse
+         */
+        return !is_array($result)
+            ? $result->toArray()
+            : array_map(function ($item) {
+                return $item->toArray();
+            }, $result);
     }
 
     private function updateTimeout()

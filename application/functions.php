@@ -6,6 +6,7 @@
 
 use MMWS\Factory\RequestExceptionFactory;
 use MMWS\Abstracts\Model;
+use MMWS\Model\UniqueId;
 
 /** @var $auth_enabled enable authentication ? */
 $auth_enabled = true;
@@ -71,7 +72,7 @@ function modelToArray($object)
 }
 /**
  * Spits the requested content
- * @param Array $content is the formatted array to put on the response message
+ * @param MMWS\Abstracts\Model|MMWS\Abstracts\Model[] $content is the formatted array to put on the response message
  */
 function send($content)
 {
@@ -89,6 +90,7 @@ function send($content)
     print_r(json_encode($response, JSON_INVALID_UTF8_IGNORE));
     return;
 }
+
 function auth_enabled()
 {
     global $auth_enabled;
@@ -165,26 +167,9 @@ function swap_chars(String $string)
     return preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/"), explode(" ", "a A e E i I o O u U n N"), $string);
 }
 
-function unique_id(Int $size = 6, $hash = 'sha256')
+function unique_id(Int $size = 6, $hash = UniqueId::SHA256)
 {
-    $d = time();
-    $pre = 'unique_id_mm@@_';
-    $pre = hash($hash, $pre . $d);
-    $uid = '';
-    $len = 6;
-
-    if (!$pre) return ['res' => false, 'message' => 'Invalid hashing algorithm.'];
-
-    if ($size <= 128) {
-        $len = $size;
-    } else {
-        return array('res' => 'Length must be an integer below 128!', 'err' => true);
-    }
-    for ($i = 0; $i < $len; $i++) {
-        $uid .= substr($pre, rand(0, $len), 1);
-    }
-
-    return array('uid' => $uid, 'length' => strlen($uid), 'hash' => $pre);
+    return new UniqueId($size, $hash);
 }
 
 /**
