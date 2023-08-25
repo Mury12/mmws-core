@@ -33,7 +33,7 @@ class JWTHandler
         $payload['exp'] = $exp->getTimestamp();
         $payload['nbf'] = (new \DateTime())->format('yy-m-d H:m:s');
         $payload['iat'] = (new \DateTime())->format('yy-m-d H:m:s');
-        $payload['jti'] = unique_id(12)['uid'];
+        $payload['jti'] = unique_id(12)->uid;
 
         $jwt = JWT::encode($payload, $key);
         SESSION::add('@app:jwt', $jwt);
