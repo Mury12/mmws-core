@@ -492,7 +492,11 @@ class PDOQueryBuilder
         $and = [];
         foreach ($filters as $filter => $val) {
             $value = $this->sanitize($val);
-            if (stripos($value, '|')) {
+            if (strpos($filter, '_in')) {
+                $filter = explode('_in', $filter);
+                $filter = $filter[0];
+                $str = " (`$filter` IN ($value))";
+            } elseif (stripos($value, '|')) {
                 $values = explode('|', $value);
                 $str = " (`$filter` LIKE '%" . implode("%' OR `$filter` LIKE '%", $values) . "%')";
             } else $str = "`$filter` LIKE '%$value%'";
@@ -503,7 +507,7 @@ class PDOQueryBuilder
             $this->hasWhere = true;
         return $this;
     }
-    
+
     function search(array $fields, string $query)
     {
         try {

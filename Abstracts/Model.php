@@ -44,7 +44,7 @@ class Model
                 $k = $snake
                     ? CaseHandler::convert($sanitizedKey, 1)
                     : $sanitizedKey;
-                $arr[$k] = $prop;
+                $arr[$k] =  $prop instanceof Model ? $prop->toArray() : $prop;
             }
         }
         return $arr;

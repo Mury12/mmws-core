@@ -4,7 +4,7 @@ namespace MMWS\Handler;
 
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
-use MMWS\Model\User;
+use MMWS\Interfaces\BaseUser;
 
 /**
  * Manages JWT to authenticate users and
@@ -17,23 +17,23 @@ class JWTHandler
      * @param User $user
      * @return string token
      */
-    public static function create(User $user)
+    public static function create(BaseUser $user)
     {
         if (!_JWT_DEFINED_KEY_)
             throw new \Error('Tries JWT assignment but the security key is not defined.');
-        if (!$user || !$user->id)
-            throw new \ParseError("Can't create a token without User uuid.");
+        if (!$user || !$user instanceof BaseUser)
+            throw new \TypeError("User should be instance of BaseUser.", 500);
 
         $key = _JWT_DEFINED_KEY_;
         $exp = new \DateTime();
         $exp->add(new \DateInterval('P7D'));
 
         $payload['iss'] = $_SERVER['REMOTE_ADDR'];
-        $payload['sub'] = $user->id;
+        $payload['sub'] = $user->getId();
         $payload['exp'] = $exp->getTimestamp();
         $payload['nbf'] = (new \DateTime())->format('yy-m-d H:m:s');
         $payload['iat'] = (new \DateTime())->format('yy-m-d H:m:s');
-        $payload['jti'] = unique_id(12)['uid'];
+        $payload['jti'] = unique_id(12)->uid;
 
         $jwt = JWT::encode($payload, $key);
         SESSION::add('@app:jwt', $jwt);
