@@ -413,3 +413,12 @@ function remove_nulls(array &$array)
         }
     }
 }
+
+/**
+ * Get a proxy url if defined in .env
+ */
+function get_proxy_url(string $endpoint)
+{
+    $proxy = $_ENV['PROXY_URL'] ?? '/';
+    return $proxy . trim($endpoint, '/');
+}
