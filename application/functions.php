@@ -25,6 +25,7 @@ function set_http_code($code)
  */
 function report($error)
 {
+    if (!defined($_SERVER['REQUEST_URI'])) return;
     // $error['FROM_IP'] = ORIGIN_HTTP_ADDR;
     $error['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
     $error['REQUEST_METHOD'] = $_SERVER['REQUEST_METHOD'];
