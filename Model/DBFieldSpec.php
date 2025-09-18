@@ -9,6 +9,7 @@ class DBFieldSpec
     public string $name;
     public string $type;
     public ?bool $nullable;
+    public ?string $extra;
     public $default;
 
     const INT = 'int';
@@ -23,6 +24,9 @@ class DBFieldSpec
     const CHAR = 'string';
     // TODO: Needs a transform to JSON on GETTER
     const LONGTEXT = 'string';
+    const ENUM = 'string';
+    const TEXT = 'string';
+    const CHECK = 'string';
 
     public function __construct(string $name, string $type, ?string $nullable = 'NO', $default = null, ?string $extra)
     {
