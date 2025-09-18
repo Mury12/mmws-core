@@ -31,8 +31,8 @@ class JWTHandler
         $payload['iss'] = $_SERVER['REMOTE_ADDR'];
         $payload['sub'] = $user->id;
         $payload['exp'] = $exp->getTimestamp();
-        $payload['nbf'] = (new \DateTime())->format('yy-m-d H:m:s');
-        $payload['iat'] = (new \DateTime())->format('yy-m-d H:m:s');
+        $payload['nbf'] = (new \DateTime())->getTimestamp();
+        $payload['iat'] = (new \DateTime())->getTimestamp();
         $payload['jti'] = unique_id(12)->uid;
 
         $jwt = JWT::encode($payload, $key);
